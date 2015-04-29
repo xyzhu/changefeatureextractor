@@ -14,10 +14,9 @@ public class Content {
 	static final String findNewLoc = "select content from content where file_id=? and commit_id=?";
 	private static PreparedStatement findNewLocQuery;
 
-	public int getNewLoc(String fileid, String commitid) {
+	public String getContent(String fileid, String commitid){
 		final ResultSet contents;
 		String content = null;
-		int newloc = 0;
 		try {
 			findNewLocQuery = conn.prepareStatement(findNewLoc);
 			findNewLocQuery.setString(1, fileid);
@@ -26,14 +25,19 @@ public class Content {
 			while(contents.next()){
 				content = contents.getString(1);
 			}
-			for(int i=0;i<content.length();i++){
-				if((content.charAt(i))=='\n'){
-					newloc++;
-				}
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+
+		}catch (SQLException e) {
 			e.printStackTrace();
+		}
+		return content;
+	}
+	public int getNewLoc(String fileid, String commitid) {
+		String content = getContent(fileid,commitid);
+		int newloc = 0;
+		for(int i=0;i<content.length();i++){
+			if((content.charAt(i))=='\n'){
+				newloc++;
+			}
 		}
 		return newloc+1;
 	}

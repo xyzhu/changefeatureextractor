@@ -18,7 +18,7 @@ public class MetaFeature {
 	private static PreparedStatement findChangeCountQuery;
 	private static PreparedStatement findBugCountQuery;
 
-	public String getFeature(String commitid) {
+	public String getFeature(String fileid, String commitid) {
 		final ResultSet allMetaFeatures;
 		ResultSet historyCount;
 		int authorid = -1;
@@ -29,6 +29,9 @@ public class MetaFeature {
 		int changecount = 0;
 		int bugcount = 0;
 		int logLength = 0;
+		Hunks hunks = new Hunks();
+		Content content = new Content();
+		int changeloc = 0, newloc = 0;
 		try {
 			findLogQuery = conn.prepareStatement(findLog);
 			findLogQuery.setString(1, commitid);
@@ -60,6 +63,8 @@ public class MetaFeature {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+",";
+		changeloc = hunks.getChangeLoc(fileid,commitid);
+		newloc = content.getNewLoc(fileid,commitid);
+		return authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+","+changeloc+","+newloc;
 	}
 }

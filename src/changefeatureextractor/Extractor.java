@@ -15,23 +15,23 @@ public class Extractor {
 		Iterator<String[]> li = fc.filecommit.iterator();
 		String filecommit[] = new String[2];
 		String fileid, commitid,is_bug_intro;
+		String features = "";
 		String metafeature = "";
+		String bowfeature = "";
 		MetaFeature mf = new MetaFeature();
-		Hunks hunks = new Hunks();
-		Content content = new Content();
-		int changeLoc = 0, newLoc = 0;
+		BowFeature bf = new BowFeature();
 		while(li.hasNext()){
 			filecommit = li.next();
 			fileid = filecommit[0];
 			commitid = filecommit[1];
 			is_bug_intro = filecommit[2];
-			metafeature+=fileid+","+commitid+",";
-			metafeature += mf.getFeature(commitid);
-			changeLoc = hunks.getChangeLoc(fileid,commitid);
-			newLoc = content.getNewLoc(fileid,commitid);
-			metafeature += changeLoc+","+newLoc+","+is_bug_intro+"\n";
-			fw.saveToFile(metafeature);
-			metafeature = "";
+			features+=fileid+","+commitid+",";
+			metafeature = mf.getFeature(fileid, commitid);
+			features += metafeature;
+			features+=is_bug_intro;
+			bf.getFeature(fileid,commitid);
+			features += bowfeature;
+			fw.saveToFile(features);
 		}
 		fw.close();
 	}
