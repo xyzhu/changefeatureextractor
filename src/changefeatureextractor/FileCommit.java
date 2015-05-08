@@ -14,8 +14,8 @@ public class FileCommit {
 	static final String findIsBugIntro = "select is_bug_intro from file_commit where file_id=? and commit_id=?";
 	private static PreparedStatement findFileCommitQuery;
 	private static PreparedStatement findIsBugIntroQuery;
-	ArrayList<String[]> filecommit = new ArrayList();
-	public void findFileCommit(){
+	ArrayList<String[]> filecommits = new ArrayList<String[]>();
+	public ArrayList<String[]> findFileCommit(){
 		final ResultSet allFileCommit;
 		ResultSet isBugIntro;
 		try {
@@ -35,10 +35,11 @@ public class FileCommit {
 				while(isBugIntro.next()){
 					record[2] = Boolean.toString(isBugIntro.getBoolean(1));
 				}
-				filecommit.add(record);
+				filecommits.add(record);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return filecommits;
 	}
 }

@@ -65,6 +65,6 @@ public class MetaFeature {
 		}
 		changeloc = hunks.getChangeLoc(fileid,commitid);
 		newloc = content.getNewLoc(fileid,commitid);
-		return authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+","+changeloc+","+newloc;
+		return authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+","+changeloc+","+newloc+",";
 	}
 }
