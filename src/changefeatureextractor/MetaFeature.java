@@ -18,7 +18,7 @@ public class MetaFeature {
 	private static PreparedStatement findChangeCountQuery;
 	private static PreparedStatement findBugCountQuery;
 
-	public String getFeature(String fileid, String commitid) {
+	public String getFeature(String commitid, String fileid) {
 		final ResultSet allMetaFeatures;
 		ResultSet historyCount;
 		int authorid = -1;
@@ -64,7 +64,6 @@ public class MetaFeature {
 			e.printStackTrace();
 		}
 		changeloc = hunks.getChangeLoc(fileid,commitid);
-		newloc = content.getNewLoc(fileid,commitid);
-		return authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+","+changeloc+","+newloc+",";
+		return authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+","+changeloc+",";
 	}
 }

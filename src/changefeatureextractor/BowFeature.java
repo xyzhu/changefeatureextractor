@@ -21,7 +21,6 @@ public class BowFeature {
 			fileid = filecommit[0];
 			commitid = filecommit[1];
 			String content = con.getContent(fileid, commitid);
-			//System.out.println(content);
 			Map<String, Integer> splitmap = findSpliter(content);
 			String[] allwords = content.split("\\s+|\\n|\\t|\\.|;|\\(|\\)|\\{|\\}|\\[|\\]|,|//|\"|@|<|>|\\:|\\#|\\=|\\+|\\-|\\!|'|/|\\?");
 			Map<String, Integer> map = removeWhite(allwords);
@@ -104,15 +103,7 @@ public class BowFeature {
 		}
 		return map;
 	}
-	public void printBowFeature() throws IOException {
-		Iterator<Map.Entry<String, Integer>> it;
-		Map.Entry<String, Integer> entry;
-		it = bowmaps.entrySet().iterator();
-		while(it.hasNext()){
-			entry = (Map.Entry<String, Integer>)it.next();
-			//			System.out.println(entry.getKey()+"---"+entry.getValue());
-		}
-	}
+	
 	public static String getBowFeature(Map<String, Integer> bowmap) {
 		String bowf = "";
 		Iterator<Map.Entry<String, Integer>> it = bowmaps.entrySet().iterator();
