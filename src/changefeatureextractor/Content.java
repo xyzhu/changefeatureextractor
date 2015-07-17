@@ -42,12 +42,12 @@ public class Content {
 			preContent = new PreContent(commitid, fileid);
 			content = getContent(commitid, fileid);
 			patch = getPatch(commitid, fileid);
-			if(patch!=null){
-				fw1 = new FileWrite("files/"+projectname+"_"+commitid+"_"+fileid);
+			if(patch!=null){			
+				fw1 = new FileWrite("files/"+projectname+"_"+commitid+"_"+fileid+".java");
 				fw1.saveToFile(content);
 				fw1.close();
 				if(!type.equals("A")){
-					fw2 = new FileWrite("files/"+projectname+"_"+commitid+"_"+fileid+"_pre");
+					fw2 = new FileWrite("files/"+projectname+"_"+commitid+"_"+fileid+"_pre.java");
 					precontent = preContent.getContent(content,patch);
 					String lastString = "", preLastString = "";
 					int contentLen = content.length();

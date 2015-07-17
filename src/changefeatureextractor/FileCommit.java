@@ -32,9 +32,9 @@ public class FileCommit {
 			String record[];
 			while (allFileCommit.next()) {
 				record = new String[4];
-				record[0] = allFileCommit.getString(1);
-				record[1] = allFileCommit.getString(2);
-				record[2] = allFileCommit.getString(3);
+				record[0] = allFileCommit.getString(1);//commit id
+				record[1] = allFileCommit.getString(2);//file id
+				record[2] = allFileCommit.getString(3);//action type
 
 				findIsBugIntroQuery.setString(1,record[0]);
 				findIsBugIntroQuery.setString(2, record[1]);

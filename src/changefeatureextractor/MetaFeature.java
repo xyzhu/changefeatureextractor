@@ -4,14 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 
 import Util.Dates;
 import Database.DatabaseManager;
 
 public class MetaFeature {
 	final static Connection conn = DatabaseManager.getConnection(); // for database
-	static final String findLog = "select author_id, author_date, message from scmlog where id=?";
+	static final String findLog = "select author_id, author_date, message, action_type from scmlog, action_files where scmlog.id=action_files.commit_id and scmlog.id=? and action_files.file_id=?";
 	static final String findChangeCount = "select count(*) from scmlog where author_date<?";
 	static final String findBugCount = "select count(*) from scmlog where author_date<? and is_bug_fix=1";
 	private static PreparedStatement findLogQuery;
@@ -24,22 +23,22 @@ public class MetaFeature {
 		int authorid = -1;
 		String authordate = null;
 		String message;
+		String type = "";
 		int hour = -1;
 		int day = -1;
 		int changecount = 0;
 		int bugcount = 0;
 		int logLength = 0;
-		Hunks hunks = new Hunks();
-		Content content = new Content();
-		int changeloc = 0, newloc = 0;
 		try {
 			findLogQuery = conn.prepareStatement(findLog);
 			findLogQuery.setString(1, commitid);
+			findLogQuery.setString(2, fileid);
 			allMetaFeatures = findLogQuery.executeQuery();
 			while (allMetaFeatures.next()) {
 				authorid = allMetaFeatures.getInt(1);
 				authordate = allMetaFeatures.getString(2);
 				message = allMetaFeatures.getString(3);
+				type = allMetaFeatures.getString(4);
 				if(message.contains("*** empty log message ***"))
 					logLength = 0;
 				else
@@ -63,7 +62,6 @@ public class MetaFeature {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		changeloc = hunks.getChangeLoc(fileid,commitid);
-		return authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+","+changeloc+",";
+		return ","+authorid+","+hour+","+day+","+logLength+","+changecount+","+bugcount+","+type;
 	}
 }

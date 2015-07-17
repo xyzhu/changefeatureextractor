@@ -10,6 +10,7 @@ import java.util.Map;
 public class FileWrite {
 	File file;
 	BufferedWriter out;
+	
 	public FileWrite(String filename) {
 		file = new File (filename);
 		try {
@@ -31,7 +32,7 @@ public class FileWrite {
 		String featurename = "";
 		Iterator<Map.Entry<String, Integer>> it;
 		Map.Entry<String, Integer> entry;
-		it = BowFeature.bowmaps.entrySet().iterator();
+		it = SrcBowFeature.bowmaps.entrySet().iterator();
 		while(it.hasNext()){
 			entry = (Map.Entry<String, Integer>)it.next();
 			featurename += entry.getKey()+",";
