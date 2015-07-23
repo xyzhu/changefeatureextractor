@@ -1,4 +1,4 @@
-package changefeatureextractor;
+package content;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -23,7 +23,7 @@ public class PreContent {
 		Pattern p = Pattern.compile("@@.*@@");
 		Matcher m = p.matcher(patch);
 		int startIndex, endIndex;
-		String hunk, sep, codeChange;
+		String sep;
 		hunks = patch.split("@@.*@@.*");//use such patterns to split patch into change hunks
 		//add startline number 0 to seps to starting with the first line of the content
 		int startlineno[] = new int[2];
@@ -64,7 +64,7 @@ public class PreContent {
 	private void generatePreContent() {
 		int hunkslen = hunks.length;
 		int presep[], cursep[];
-		String hunk, oldhunk;
+		String hunk;
 		String oldhunkLines[];
 		int unchangeStartNo = 0, unchangeEndNo = 0;
 		for(int i=0;i<hunkslen-1;i++){

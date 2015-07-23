@@ -1,4 +1,4 @@
-package changefeatureextractor;
+package metafeature;
 
 public class CodeLine {
 	public String content;

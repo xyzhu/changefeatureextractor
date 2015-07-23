@@ -1,4 +1,4 @@
-package changefeatureextractor;
+package content;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -8,9 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.mysql.jdbc.StringUtils;
-
-import Database.DatabaseManager;
+import database.DatabaseManager;
+import Util.FileWrite;
 
 public class Content {
 	final static Connection conn = DatabaseManager.getConnection();

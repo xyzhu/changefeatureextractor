@@ -4,7 +4,7 @@
  * file_commit
  * zxy-2015.6.30
  */
-package changefeatureextractor;
+package metafeature;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import Database.DatabaseManager;
+import database.DatabaseManager;
 
 public class FileCommit {
 	final static Connection conn = DatabaseManager.getConnection(); // for database

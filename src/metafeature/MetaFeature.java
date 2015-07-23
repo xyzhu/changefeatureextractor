@@ -1,12 +1,12 @@
-package changefeatureextractor;
+package metafeature;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import database.DatabaseManager;
 import Util.Dates;
-import Database.DatabaseManager;
 
 public class MetaFeature {
 	final static Connection conn = DatabaseManager.getConnection(); // for database
@@ -24,8 +24,8 @@ public class MetaFeature {
 		String authordate = null;
 		String message;
 		String type = "";
-		int hour = -1;
-		int day = -1;
+		String hour = "";
+		String day = "";
 		int changecount = 0;
 		int bugcount = 0;
 		int logLength = 0;
@@ -43,8 +43,8 @@ public class MetaFeature {
 					logLength = 0;
 				else
 					logLength = message.toString().length();
-				hour = Dates.toHour(authordate);
-				day = Dates.toDay(authordate);
+				hour = Dates.toHourString(authordate);
+				day = Dates.toDayString(authordate);
 				findChangeCountQuery = conn.prepareStatement(findChangeCount);
 				findChangeCountQuery.setString(1, authordate);
 				historyCount = findChangeCountQuery.executeQuery();
