@@ -31,10 +31,11 @@ public class Extractor {
 	String featurename = "";
 	public ArrayList<String[]> complexities = null;
 	public ArrayList<String[]> complexities_pre = null;
-	String projectname = "", commitrange = "";
+	String datapath = "",projectname = "", commitrange = "";
 	Boolean get_complexity, get_sbow, get_abow,get_dbow, get_mbow, get_pbow, write_name;
 
-	public Extractor(String pname, String range, boolean complexity, boolean sbow, boolean abow, boolean dbow, boolean mbow, boolean pbow, boolean wname){
+	public Extractor(String dpath, String pname, String range, boolean complexity, boolean sbow, boolean abow, boolean dbow, boolean mbow, boolean pbow, boolean wname){
+		datapath = dpath;
 		projectname = pname;
 		commitrange = range;
 		get_complexity = complexity;
@@ -51,6 +52,7 @@ public class Extractor {
 		 * Command line parsing
 		 */
 		CmdLineParser parser = new CmdLineParser();
+		CmdLineParser.Option datapath_opt = parser.addStringOption('i',"datapath");
 		CmdLineParser.Option project_opt = parser.addStringOption('t', "project");
 		CmdLineParser.Option commitrange_opt = parser.addStringOption('r',"range");
 		CmdLineParser.Option savecontent_opt = parser.addBooleanOption('c', "content");
@@ -70,6 +72,7 @@ public class Extractor {
 			//            printUsage();
 			System.exit(2);
 		}
+		String datapath = (String) parser.getOptionValue(datapath_opt, null);
 		String projectname = (String) parser.getOptionValue(project_opt, null);
 		String commitrange = (String) parser.getOptionValue(commitrange_opt, null);
 		Boolean savecontent = (Boolean) parser.getOptionValue(savecontent_opt, false);
@@ -82,7 +85,7 @@ public class Extractor {
 		Boolean write_name = (Boolean)parser.getOptionValue(featurename_opt,false);
 		Boolean savefeaturename = (Boolean)parser.getOptionValue(savefeaturename_opt, false);
 
-		Extractor ext = new Extractor(projectname, commitrange, get_complexity, get_sbow, get_abow, get_dbow, get_mbow, get_pbow, write_name);
+		Extractor ext = new Extractor(datapath, projectname, commitrange, get_complexity, get_sbow, get_abow, get_dbow, get_mbow, get_pbow, write_name);
 		if(savecontent){
 			ext.saveContent();
 		}
@@ -98,7 +101,7 @@ public class Extractor {
 		content.save();
 	}
 	public void extractToFile() throws IOException {
-		FileWrite fw = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/feature/"+projectname+".csv");
+		FileWrite fw = new FileWrite(datapath+projectname+"/"+commitrange+"/feature/"+projectname+".csv");
 		init();
 		if(write_name){
 			featurename = extractFeatureName();
@@ -131,8 +134,8 @@ public class Extractor {
 		if(get_complexity){
 			complexities = new ArrayList<String[]>();
 			complexities_pre = new ArrayList<String[]>();
-			FileRead fr1 = new FileRead("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/feature/Content.csv");
-			FileRead fr2 = new FileRead("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/feature/ContentPre.csv");
+			FileRead fr1 = new FileRead(datapath+projectname+"/"+commitrange+"/feature/Content.csv");
+			FileRead fr2 = new FileRead(datapath+projectname+"/"+commitrange+"/feature/ContentPre.csv");
 			complexities = fr1.readFromFile();
 			complexities_pre = fr2.readFromFile();
 		}
@@ -172,7 +175,7 @@ public class Extractor {
 			saveName("_delfeature", dbf.bowmaps);
 	}
 	public void saveName(String filename, Map<String, Integer> bmps) throws IOException{
-		FileWrite fwriter = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/"+filename);
+		FileWrite fwriter = new FileWrite(datapath+projectname+"/"+commitrange+"/"+filename);
 		Map<String, Integer> bowmaps = bmps;
 		Iterator<Map.Entry<String, Integer>> it = bowmaps.entrySet().iterator();
 		int size = bowmaps.size();
