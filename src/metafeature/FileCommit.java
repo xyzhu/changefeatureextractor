@@ -16,8 +16,8 @@ import database.DatabaseManager;
 
 public class FileCommit {
 	final static Connection conn = DatabaseManager.getConnection(); // for database
-	static final String findFileCommit = "select fc.commit_id, fc.file_id, af.action_type from file_commit fc, content c, action_files af "
-			+ "where fc.commit_id=c.commit_id and fc.file_id=c.file_id and af.commit_id=c.commit_id and af.file_id=c.file_id ";
+	static final String findFileCommit = "select fc.commit_id, fc.file_id, af.action_type from file_commit fc, content c, patches p, action_files af "
+			+ "where fc.commit_id=c.commit_id and fc.file_id=c.file_id and fc.commit_id=p.commit_id and fc.file_id=p.file_id and af.commit_id=c.commit_id and af.file_id=c.file_id ";
 	static final String findIsBugIntro = "select is_bug_intro from file_commit where commit_id=? and file_id=?";
 	private static PreparedStatement findFileCommitQuery;
 	private static PreparedStatement findIsBugIntroQuery;

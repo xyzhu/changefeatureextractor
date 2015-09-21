@@ -31,11 +31,12 @@ public class Extractor {
 	String featurename = "";
 	public ArrayList<String[]> complexities = null;
 	public ArrayList<String[]> complexities_pre = null;
-	String projectname = "";
+	String projectname = "", commitrange = "";
 	Boolean get_complexity, get_sbow, get_abow,get_dbow, get_mbow, get_pbow, write_name;
 
-	public Extractor(String pname, boolean complexity, boolean sbow, boolean abow, boolean dbow, boolean mbow, boolean pbow, boolean wname){
+	public Extractor(String pname, String range, boolean complexity, boolean sbow, boolean abow, boolean dbow, boolean mbow, boolean pbow, boolean wname){
 		projectname = pname;
+		commitrange = range;
 		get_complexity = complexity;
 		get_sbow = sbow;
 		get_abow = abow;
@@ -51,6 +52,7 @@ public class Extractor {
 		 */
 		CmdLineParser parser = new CmdLineParser();
 		CmdLineParser.Option project_opt = parser.addStringOption('t', "project");
+		CmdLineParser.Option commitrange_opt = parser.addStringOption('r',"range");
 		CmdLineParser.Option savecontent_opt = parser.addBooleanOption('c', "content");
 		CmdLineParser.Option srcfeature_opt = parser.addBooleanOption('s', "srcfeature");
 		CmdLineParser.Option addsrcfeature_opt = parser.addBooleanOption('a',"addsrcfeature");
@@ -69,17 +71,18 @@ public class Extractor {
 			System.exit(2);
 		}
 		String projectname = (String) parser.getOptionValue(project_opt, null);
+		String commitrange = (String) parser.getOptionValue(commitrange_opt, null);
 		Boolean savecontent = (Boolean) parser.getOptionValue(savecontent_opt, false);
 		Boolean get_sbow = (Boolean)parser.getOptionValue(srcfeature_opt, false);
-		Boolean get_abow = (Boolean)parser.getOptionValue(addsrcfeature_opt, false);
-		Boolean get_dbow = (Boolean)parser.getOptionValue(delsrcfeature_opt, false);
+		Boolean get_complexity = (Boolean)parser.getOptionValue(complexity_opt, false);
 		Boolean get_mbow = (Boolean)parser.getOptionValue(messagefeature_opt, false);
 		Boolean get_pbow = (Boolean)parser.getOptionValue(pathfeature_opt, false);
-		Boolean get_complexity = (Boolean)parser.getOptionValue(complexity_opt, false);
+		Boolean get_abow = (Boolean)parser.getOptionValue(addsrcfeature_opt, false);
+		Boolean get_dbow = (Boolean)parser.getOptionValue(delsrcfeature_opt, false);
 		Boolean write_name = (Boolean)parser.getOptionValue(featurename_opt,false);
 		Boolean savefeaturename = (Boolean)parser.getOptionValue(savefeaturename_opt, false);
 
-		Extractor ext = new Extractor(projectname, get_complexity, get_sbow, get_abow, get_dbow, get_mbow, get_pbow, write_name);
+		Extractor ext = new Extractor(projectname, commitrange, get_complexity, get_sbow, get_abow, get_dbow, get_mbow, get_pbow, write_name);
 		if(savecontent){
 			ext.saveContent();
 		}
@@ -87,26 +90,31 @@ public class Extractor {
 			ext.saveFeatureName();
 		}
 		else
-			ext.extract();
+			ext.extractToFile();
 
 	}
 	public void saveContent() throws IOException {
-		Content content = new Content(projectname, filecommits);
+		Content content = new Content(projectname, commitrange, filecommits);
 		content.save();
 	}
-	public void extract() throws IOException {
-		FileWrite fw = new FileWrite("files/"+projectname+".csv");
-		Iterator<String[]> li = filecommits.iterator();
-		String filecommit[] = new String[4];//used to save one filecommits record
-		String commitid, fileid, is_bug_intro;
+	public void extractToFile() throws IOException {
+		FileWrite fw = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/feature/"+projectname+".csv");
 		init();
 		if(write_name){
 			featurename = extractFeatureName();
 			featurename+=", is_bug_intro";
 			fw.saveToFile(featurename+"\n");
 		}
+		String featurevalue = extract();
+		fw.saveToFile(featurevalue);
+		fw.close();
+	}
+
+	public String extract(){
+		Iterator<String[]> li = filecommits.iterator();
+		String filecommit[] = new String[4];//used to save one filecommits record
+		String commitid, fileid, is_bug_intro, featurevalue = "";
 		int recordCount = 0;//used to find record in the map
-		String featurevalue = "";
 		while(li.hasNext()){
 			filecommit = li.next();
 			commitid = filecommit[0];
@@ -114,22 +122,27 @@ public class Extractor {
 			is_bug_intro = filecommit[3];
 			featurevalue += commitid+","+fileid;
 			featurevalue += extractOneFile(commitid, fileid, recordCount);
-			featurevalue += ","+is_bug_intro;
+			featurevalue += ","+is_bug_intro+"\n";
 			recordCount++;
-			fw.saveToFile(featurevalue+"\n");
-			featurevalue = "";
 		}
-		fw.close();
+		return featurevalue;
 	}
-
 	public void init() throws IOException {
 		if(get_complexity){
 			complexities = new ArrayList<String[]>();
 			complexities_pre = new ArrayList<String[]>();
-			FileRead fr1 = new FileRead("files/Content.csv");
-			FileRead fr2 = new FileRead("files/ContentPre.csv");
+			FileRead fr1 = new FileRead("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/feature/Content.csv");
+			FileRead fr2 = new FileRead("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/feature/ContentPre.csv");
 			complexities = fr1.readFromFile();
 			complexities_pre = fr2.readFromFile();
+		}
+		if(get_mbow){
+			mbf = new MessageBowFeature();
+			mbf.buildFeatureMap(filecommits);
+		}
+		if(get_pbow){
+			pbf = new PathBowFeature();
+			pbf.buildFeatureMap(filecommits);
 		}
 		if(get_sbow){
 			sbf = new SrcBowFeature();
@@ -143,31 +156,23 @@ public class Extractor {
 			dbf = new DelSrcBowFeature();
 			dbf.buildFeatureMap(filecommits);
 		}
-		if(get_mbow){
-			mbf = new MessageBowFeature();
-			mbf.buildFeatureMap(filecommits);
-		}
-		if(get_pbow){
-			pbf = new PathBowFeature();
-			pbf.buildFeatureMap(filecommits);
-		}
 	}
 
 	public void saveFeatureName() throws IOException{
 		init();
+		if(get_mbow)
+			saveName("_messagefeature",mbf.bowmaps);
+		if(get_pbow)
+			saveName("_pathfeature", pbf.bowmaps);
 		if(get_sbow)
 			saveName("_srcfeature", sbf.bowmaps);
 		if(get_abow)
 			saveName("_addfeature", abf.bowmaps);
 		if(get_dbow)
 			saveName("_delfeature", dbf.bowmaps);
-		if(get_mbow)
-			saveName("_messagefeature",mbf.bowmaps);
-		if(get_pbow)
-			saveName("_pathfeature", pbf.bowmaps);
 	}
 	public void saveName(String filename, Map<String, Integer> bmps) throws IOException{
-		FileWrite fwriter = new FileWrite("files/"+projectname+filename);
+		FileWrite fwriter = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/"+filename);
 		Map<String, Integer> bowmaps = bmps;
 		Iterator<Map.Entry<String, Integer>> it = bowmaps.entrySet().iterator();
 		int size = bowmaps.size();
@@ -185,16 +190,16 @@ public class Extractor {
 		name = fn.getMetaName();
 		if(get_complexity)
 			name += fn.getComplexityName(complexities, complexities_pre);
+		if(get_mbow)
+			name += fn.getBowFeatureName(mbf.bowmaps);
+		if(get_pbow)
+			name += fn.getBowFeatureName(pbf.bowmaps);
 		if(get_sbow)
 			name += fn.getBowFeatureName(sbf.bowmaps);	
 		if(get_abow)
 			name += fn.getBowFeatureName(abf.bowmaps);
 		if(get_dbow)
 			name += fn.getBowFeatureName(dbf.bowmaps);
-		if(get_mbow)
-			name += fn.getBowFeatureName(mbf.bowmaps);
-		if(get_pbow)
-			name += fn.getBowFeatureName(pbf.bowmaps);
 		return name;
 	}
 
@@ -208,6 +213,12 @@ public class Extractor {
 		if(get_complexity){
 			featurevalue += fv.getComplexityValue(complexities, complexities_pre, commitid, fileid);
 		}
+		if(get_mbow){
+			featurevalue += mbf.getBowFeatureValue(mbf.maplist.get(recordCount));
+		}
+		if(get_pbow){
+			featurevalue += pbf.getBowFeatureValue(pbf.maplist.get(recordCount));
+		}
 		if(get_sbow){
 			featurevalue += sbf.getBowFeatureValue(sbf.maplist.get(recordCount));
 		}
@@ -216,12 +227,6 @@ public class Extractor {
 		}
 		if(get_dbow){
 			featurevalue += dbf.getBowFeatureValue(dbf.maplist.get(recordCount));
-		}
-		if(get_mbow){
-			featurevalue += mbf.getBowFeatureValue(mbf.maplist.get(recordCount));
-		}
-		if(get_pbow){
-			featurevalue += pbf.getBowFeatureValue(pbf.maplist.get(recordCount));
 		}
 		return featurevalue;
 	}

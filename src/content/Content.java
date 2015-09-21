@@ -17,14 +17,15 @@ public class Content {
 	static final String findPatch = "select patch from patches where commit_id=? and file_id=?";
 	private static PreparedStatement findContentQuery;
 	private static PreparedStatement findPatchQuery;
-	String projectname = "";
+	String projectname = "", commitrange = "";
 	ArrayList<String[]> filecommits;
 	String commitid, fileid, type;
 	String filecommit[] = new String[3];
 	FileWrite fw1;
 	FileWrite fw2;
-	public Content(String project_name, ArrayList<String[]>fcs) {
+	public Content(String project_name, String range, ArrayList<String[]>fcs) {
 		projectname = project_name;
+		commitrange = range;
 		filecommits = fcs;
 	}
 	public Content() {
@@ -41,33 +42,28 @@ public class Content {
 			preContent = new PreContent(commitid, fileid);
 			content = getContent(commitid, fileid);
 			patch = getPatch(commitid, fileid);
-			if(patch!=null){			
-				fw1 = new FileWrite("files/"+projectname+"_"+commitid+"_"+fileid+".java");
-				fw1.saveToFile(content);
-				fw1.close();
-				if(!type.equals("A")){
-					fw2 = new FileWrite("files/"+projectname+"_"+commitid+"_"+fileid+"_pre.java");
-					precontent = preContent.getContent(content,patch);
-					String lastString = "", preLastString = "";
-					int contentLen = content.length();
-					int precontentLen = precontent.length();
-					lastString = content.substring(contentLen-1, contentLen);
-					if(lastString.equals("\r")||lastString.equals("\n")){
-						lastString = content.substring(contentLen-2, contentLen);
-						preLastString = precontent.substring(precontentLen-1, precontentLen);
-						if(lastString.contains("\r")&&!preLastString.equals("\r")){
-							precontent += "\r";
-						}
-						if(lastString.contains("\n")&&!preLastString.equals("\n")){
-							precontent += "\n";
-						}
+			fw1 = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/content/"+commitid+"_"+fileid+".java");
+			fw1.saveToFile(content);
+			fw1.close();
+			if(!type.equals("A")){
+				fw2 = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/content/"+commitid+"_"+fileid+"_pre.java");
+				precontent = preContent.getContent(content,patch);
+				String lastString = "", preLastString = "";
+				int contentLen = content.length();
+				int precontentLen = precontent.length();
+				lastString = content.substring(contentLen-1, contentLen);
+				if(lastString.equals("\r")||lastString.equals("\n")){
+					lastString = content.substring(contentLen-2, contentLen);
+					preLastString = precontent.substring(precontentLen-1, precontentLen);
+					if(lastString.contains("\r")&&!preLastString.equals("\r")){
+						precontent += "\r";
 					}
-					fw2.saveToFile(precontent);
-					fw2.close();
+					if(lastString.contains("\n")&&!preLastString.equals("\n")){
+						precontent += "\n";
+					}
 				}
-			}
-			else{
-				System.out.println(commitid+"***"+fileid+"---null");
+				fw2.saveToFile(precontent);
+				fw2.close();
 			}
 		}		
 	}

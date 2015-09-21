@@ -47,14 +47,14 @@ public class FeatureNameTest {
 
 	@Test
 	public void testInitialFeatureName(){
-		Extractor ext = new Extractor("eclipse", false, false, false, false, false, false, false);
+		Extractor ext = new Extractor("voldemort", "500-750",false, false, false, false, false, false, false);
 		String featurename = ext.extractFeatureName();
 		assertEquals("commit,file,author,hour,day,loglen,changecount,bugcount,type,newloc,addloc,deleteloc", featurename);
 	}
 
 	@Test 
 	public void testComplexityFeatureName(){
-		Extractor ext = new Extractor("eclipse", true, false, false, false, false, false, false);
+		Extractor ext = new Extractor("voldemort", "500-750", true, false, false, false, false, false, false);
 		Extractor.featureno = 0;
 		try {
 			ext.init();
@@ -67,7 +67,7 @@ public class FeatureNameTest {
 
 	@Test
 	public void testMessageBowFeatureName(){
-		Extractor ext = new Extractor("eclipse", false, false, false, false, true, false, false);
+		Extractor ext = new Extractor("voldemort", "500-750", false, false, false, false, true, false, false);
 		Extractor.featureno = 0;
 		try {
 			ext.init();
@@ -75,12 +75,12 @@ public class FeatureNameTest {
 			e.printStackTrace();
 		}
 		ext.fn.getBowFeatureName(ext.mbf.bowmaps);
-		assertEquals(80, Extractor.featureno);
+		assertEquals(999, Extractor.featureno);
 	}
 
 	@Test
 	public void testPathBowFeatureName(){
-		Extractor ext = new Extractor("eclipse", false, false, false, false, false, true, false);
+		Extractor ext = new Extractor("voldemort", "500-750", false, false, false, false, false, true, false);
 		Extractor.featureno = 0;
 		try {
 			ext.init();
@@ -88,12 +88,12 @@ public class FeatureNameTest {
 			e.printStackTrace();
 		}
 		ext.fn.getBowFeatureName(ext.pbf.bowmaps);
-		assertEquals(237, Extractor.featureno);
+		assertEquals(263, Extractor.featureno);
 	}
 
 	@Test
 	public void testAddBowFeatureName(){
-		Extractor ext = new Extractor("eclipse", false, false, true, false, false, false, false);
+		Extractor ext = new Extractor("voldemort", "500-750", false, false, true, false, false, false, false);
 		Extractor.featureno = 0;
 		try {
 			ext.init();
@@ -101,12 +101,12 @@ public class FeatureNameTest {
 			e.printStackTrace();
 		}
 		ext.fn.getBowFeatureName(ext.abf.bowmaps);
-		assertEquals(3813, Extractor.featureno);
+		assertEquals(5546, Extractor.featureno);
 	}
 
 	@Test
 	public void testDelBowFeatureName(){
-		Extractor ext = new Extractor("eclipse", false, false, false, true, false, false, false);
+		Extractor ext = new Extractor("voldemort", "500-750", false, false, false, true, false, false, false);
 		Extractor.featureno = 0;
 		try {
 			ext.init();
@@ -114,12 +114,12 @@ public class FeatureNameTest {
 			e.printStackTrace();
 		}
 		ext.fn.getBowFeatureName(ext.dbf.bowmaps);
-		assertEquals(3022, Extractor.featureno);
+		assertEquals(4070, Extractor.featureno);
 	}
 
 	@Test
 	public void testSrcBowFeatureName(){
-		Extractor ext = new Extractor("eclipse", false, true, false, false, false, false, false);
+		Extractor ext = new Extractor("voldemort", "500-750", false, true, false, false, false, false, false);
 		Extractor.featureno = 0;
 		try {
 			ext.init();
@@ -127,6 +127,6 @@ public class FeatureNameTest {
 			e.printStackTrace();
 		}
 		ext.fn.getBowFeatureName(ext.sbf.bowmaps);
-		assertEquals(13739, Extractor.featureno);
+		assertEquals(8104, Extractor.featureno);
 	}
 }

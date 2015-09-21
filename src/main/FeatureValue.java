@@ -16,6 +16,8 @@ public class FeatureValue {
 		metavalue += mf.getFeature(commitid,fileid);
 		String content = c.getContent(commitid, fileid);
 		String patch = c.getPatch(commitid, fileid);
+		if(patch==null)
+			System.out.println(commitid+"*"+fileid);
 		cl = new CodeLine(content, patch);
 		int newLoc = cl.countNewLoc();
 		int addLoc = cl.countAddLoc();
@@ -37,7 +39,7 @@ public class FeatureValue {
 			complexity = complexities.get(i);
 			//to get the commit id and file id of the current record
 			filename = complexity[1];
-			filenamesplits = filename.split("_|\\.");
+			filenamesplits = filename.split("_|\\\\|\\.");
 			cid = filenamesplits[1];
 			fid = filenamesplits[2];
 			len = complexity.length;
