@@ -97,7 +97,7 @@ public class Extractor {
 
 	}
 	public void saveContent() throws IOException {
-		Content content = new Content(projectname, commitrange, filecommits);
+		Content content = new Content(datapath, projectname, commitrange, filecommits);
 		content.save();
 	}
 	public void extractToFile() throws IOException {

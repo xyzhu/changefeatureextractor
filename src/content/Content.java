@@ -17,13 +17,14 @@ public class Content {
 	static final String findPatch = "select patch from patches where commit_id=? and file_id=?";
 	private static PreparedStatement findContentQuery;
 	private static PreparedStatement findPatchQuery;
-	String projectname = "", commitrange = "";
+	String datapath = "", projectname = "", commitrange = "";
 	ArrayList<String[]> filecommits;
 	String commitid, fileid, type;
 	String filecommit[] = new String[3];
 	FileWrite fw1;
 	FileWrite fw2;
-	public Content(String project_name, String range, ArrayList<String[]>fcs) {
+	public Content(String data_path, String project_name, String range, ArrayList<String[]>fcs) {
+		datapath = data_path;
 		projectname = project_name;
 		commitrange = range;
 		filecommits = fcs;
@@ -42,11 +43,11 @@ public class Content {
 			preContent = new PreContent(commitid, fileid);
 			content = getContent(commitid, fileid);
 			patch = getPatch(commitid, fileid);
-			fw1 = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/content/"+commitid+"_"+fileid+".java");
+			fw1 = new FileWrite(datapath+projectname+"/"+commitrange+"/content/"+commitid+"_"+fileid+".java");
 			fw1.saveToFile(content);
 			fw1.close();
 			if(!type.equals("A")){
-				fw2 = new FileWrite("/home/zxy/change-prediction/data/"+projectname+"/"+commitrange+"/content/"+commitid+"_"+fileid+"_pre.java");
+				fw2 = new FileWrite(datapath+projectname+"/"+commitrange+"/content/"+commitid+"_"+fileid+"_pre.java");
 				precontent = preContent.getContent(content,patch);
 				String lastString = "", preLastString = "";
 				int contentLen = content.length();
